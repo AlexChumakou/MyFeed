@@ -38,7 +38,14 @@ public class MainActivity extends AppCompatActivity
         //dealwithBottomSheet();
 
         // hey avi
+        //App Interactions
 
+        //1. find feed
+        //2. Add feed
+        //3. Make Post in feed
+        //4. Vote on Posts
+        //5. View Post with comments
+        //6. My Profile
 
         // Initiate and populate RecyclerView
         dealwithRecyclerView();
