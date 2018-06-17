@@ -33,9 +33,11 @@ public class FragmentBottomSheet extends BottomSheetDialogFragment {
 
                 // Add to user's main Feed
 
+                String data = getArguments().get("data").toString();
+                ((MainFindActivity)getActivity()).WriteNewFeedToDB(data);
                 dialog.dismiss();
 
-                ((MainFindActivity)getActivity()).finish();
+
 
             }
         });

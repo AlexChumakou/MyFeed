@@ -8,6 +8,7 @@ import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -18,7 +19,18 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
+
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,View.OnClickListener {
@@ -26,6 +38,10 @@ public class MainActivity extends AppCompatActivity
     FragmentBottomSheet bottomSheetDialogFragment;
     private BottomSheetBehavior mBottomSheetBehavior1;
     FloatingActionButton fab;
+    RecyclerView recyclerView;
+    AdapterMain adapter;
+    ArrayList<String> list;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,14 +50,13 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // Initiate bottom sheet
-        //dealwithBottomSheet();
-
-        // hey avi
-
+        list = new ArrayList<>();
 
         // Initiate and populate RecyclerView
-        dealwithRecyclerView();
+        recyclerView = (RecyclerView)findViewById(R.id.recyclerMain);
+        LinearLayoutManager llm = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(llm);
+
 
 /*
         fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -63,24 +78,107 @@ public class MainActivity extends AppCompatActivity
                 //        .setAction("Action", null).show();
             }
         });
+
 */
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+    }
+
+    @Override
+    protected void onStart(){
+        super.onStart();
+
+        PopulateRecyclerView();
+    }
+
+
+    // - DB READ/WRITE - //
+
+    private void WriteNewFeedToDB(String data){
+
+        // - Initialize DB - //
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        // Create a new Feed with a title
+        Map<String, Object> feed = new HashMap<>();
+        feed.put("title", data);
+
+        // Add a new document with a generated ID
+        db.collection("feeds")
+                .add(feed)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        Log.d("TAAAG", "DocumentSnapshot added with ID: " + documentReference.getId());
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w("TAAAG", "Error adding document", e);
+                    }
+                });
 
 
 
     }
 
-    public void onClick(View v){
+    private void ReadFeedsFromDB(){
+
+        // - Initialize DB and list - //
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection("users").document("alex_c")
+                .collection("user_feeds")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (DocumentSnapshot document : task.getResult()) {
+                                //Log.d(TAG, document.getId() + " => " + document.getData());
+                                list.add(document.getString("title"));
+                                adapter.notifyDataSetChanged();
+                            }
+                        } else {
+                            //Log.d(TAG, "Error getting documents: ", task.getException());
+
+                        }
+                    }
+                });
+
 
 
     }
+
+
+    // - RECYCLER POPULATE/ITEM CLICKED - //
+
+    public void PopulateRecyclerView(){
+
+
+        ReadFeedsFromDB();
+
+        adapter = new AdapterMain(list);
+        recyclerView.setAdapter(adapter);
+    }
+
+    public void ItemClicked(String data){
+
+        Intent i = new Intent(MainActivity.this, MainFeedActivity.class);
+        i.putExtra("data",data);
+        startActivity(i);
+
+
+    }
+
+
+    // - NOT USED -//
 
     public void dealwithBottomSheet(){
 
@@ -105,32 +203,13 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    public void dealwithRecyclerView(){
-
-        ArrayList<String> list = new ArrayList<>();
-        list.add("UC Davis");
-        list.add("ECS 140");
-        list.add("ECS 180");
-        list.add("NBA NEWS");
-        list.add("UC Davis Basketball");
-        list.add("Davis Hiking");
-        list.add("Davis Party Finder");
-
-        RecyclerView recyclerView = (RecyclerView)findViewById(R.id.recyclerMain);
-        LinearLayoutManager llm = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(llm);
-        AdapterMain adapter = new AdapterMain(list);
-        recyclerView.setAdapter(adapter);
-    }
-
-    public void ItemClicked(String data){
-
-        Intent i = new Intent(MainActivity.this, MainFeedActivity.class);
-        i.putExtra("data",data);
-        startActivity(i);
+    public void onClick(View v){
 
 
     }
+
+
+    // - MENU / NAV BAR / ON BACK - //
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -187,17 +266,6 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed(){
-
-
-        if(mBottomSheetBehavior1.getState() == BottomSheetBehavior.STATE_EXPANDED) {
-            mBottomSheetBehavior1.setState(BottomSheetBehavior.STATE_COLLAPSED);
-            fab.animate().scaleY(1).scaleX(1).setDuration(500).start();
-
-        }else{
-            super.onBackPressed();
-        }
-
-
 
     }
 
