@@ -1,6 +1,7 @@
 package com.aliaksei.guideapp;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -74,17 +75,16 @@ public class MainFindActivity extends AppCompatActivity implements View.OnClickL
 
         // - Initialize DB - //
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-
+        SharedPreferences sharedPreferences = getSharedPreferences("settings",MODE_PRIVATE);
+        String user = sharedPreferences.getString("user","not_found");
         // Create a new Feed with a title
         Map<String, Object> feed = new HashMap<>();
         feed.put("title", data);
 
         // Add a new document with a generated ID
-        db.collection("users").document("alex_c")
+        db.collection("users").document(user)
                 .collection("user_feeds").document(data)
                 .set(feed);
-
-
     }
 
     private void ReadFeedsFromDB(){

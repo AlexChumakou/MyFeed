@@ -13,11 +13,7 @@
             android:name=".MainActivity"
             android:label="Gruppa | Home"
             android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".MainFeedActivity"
@@ -39,12 +35,22 @@
         </activity>
         <activity
             android:name=".MainFindActivity"
-            android:parentActivityName=".MainActivity"
             android:label="@string/title_activity_main_find"
+            android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.aliaksei.guideapp.MainActivity" />
+        </activity>
+        <activity android:name=".SplashActivity"
+            android:windowSoftInputMode="adjustResize"
+            android:theme="@style/AppTheme.NoActionBar">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
     </application>
 

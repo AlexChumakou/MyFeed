@@ -2,10 +2,12 @@ package com.aliaksei.guideapp;
 
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -134,8 +136,11 @@ public class MainActivity extends AppCompatActivity
 
         // - Initialize DB and list - //
         FirebaseFirestore db = FirebaseFirestore.getInstance();
+        SharedPreferences sharedPreferences = getSharedPreferences("settings",MODE_PRIVATE);
+        String username = sharedPreferences.getString("user","not_created");
 
-        db.collection("users").document("alex_c")
+
+        db.collection("users").document(username)
                 .collection("user_feeds")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -147,7 +152,16 @@ public class MainActivity extends AppCompatActivity
                                 list.add(document.getString("title"));
                                 adapter.notifyDataSetChanged();
                             }
+
+                            if (list.isEmpty()){
+                                Snackbar.make(getCurrentFocus(), "No feeds added yet!", Snackbar.LENGTH_LONG)
+                                        .show();
+                            }
+
                         } else {
+
+
+
                             //Log.d(TAG, "Error getting documents: ", task.getException());
 
                         }
@@ -258,6 +272,16 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
+
+        }else if (id == R.id.nav_signout){
+
+            SharedPreferences sharedPreferences = getSharedPreferences("settings",MODE_PRIVATE);
+
+            sharedPreferences.edit().putString("user","").apply();
+
+            Intent i = new Intent(this, SplashActivity.class);
+            startActivity(i);
+            finish();
 
         }
 
