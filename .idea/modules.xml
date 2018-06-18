@@ -2,9 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/MyFeed.iml" filepath="$PROJECT_DIR$/MyFeed.iml" />
+      <module fileurl="file://C:\Users\alexc\Downloads\android-NetworkConnect-master\android-NetworkConnect-master\guideapp\MyFeed.iml" filepath="C:\Users\alexc\Downloads\android-NetworkConnect-master\android-NetworkConnect-master\guideapp\MyFeed.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://C:\Users\avi12\Documents\androidDev\MyFeed\app\app.iml" filepath="C:\Users\avi12\Documents\androidDev\MyFeed\app\app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/guideapp.iml" filepath="$PROJECT_DIR$/guideapp.iml" />
       <module fileurl="file://C:\Users\avi12\Documents\androidDev\MyFeed\guideapp.iml" filepath="C:\Users\avi12\Documents\androidDev\MyFeed\guideapp.iml" />
     </modules>
   </component>

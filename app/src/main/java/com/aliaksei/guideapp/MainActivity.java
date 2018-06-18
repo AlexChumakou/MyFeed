@@ -50,6 +50,8 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+
+
         list = new ArrayList<>();
 
         // Initiate and populate RecyclerView
