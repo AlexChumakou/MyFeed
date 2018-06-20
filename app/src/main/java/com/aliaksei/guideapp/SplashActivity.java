@@ -106,7 +106,7 @@ public class SplashActivity extends Activity implements View.OnClickListener {
 
     }
 
-    private void SignInUser(String user, final String pass){
+    private void SignInUser(final String user, final String pass){
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference docRef = db.collection("users").document(user);
@@ -118,7 +118,10 @@ public class SplashActivity extends Activity implements View.OnClickListener {
                     if (document.exists()) {
                         if(document.getString("password").equals(pass)){
 
-                            Intent i = new Intent(getApplicationContext(),MainActivity.class);
+                            SharedPreferences settings = getSharedPreferences("settings",MODE_PRIVATE);
+                            settings.edit().putString("user",user).commit();
+
+                            Intent i = new Intent(getApplication(),MainActivity.class);
                             startActivity(i);
                             SplashActivity.this.finish();
 
@@ -136,10 +139,15 @@ public class SplashActivity extends Activity implements View.OnClickListener {
                         //Log.d(TAG, "No such document");
                     }
                 } else {
+
+                    Snackbar.make(getCurrentFocus(), "Task is unsuccessful", Snackbar.LENGTH_LONG)
+                            .show();
                     //Log.d(TAG, "get failed with ", task.getException());
                 }
             }
         });
+
+
 
 
         //if user exists and password is correct
@@ -151,7 +159,7 @@ public class SplashActivity extends Activity implements View.OnClickListener {
 
     private void createNewUser(String user,String pass){
         SharedPreferences settings = getSharedPreferences("settings",MODE_PRIVATE);
-        settings.edit().putString("user",user).apply();
+        settings.edit().putString("user",user).commit();
         WriteNewFeedToDB(user,pass);
 
 

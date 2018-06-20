@@ -52,8 +52,6 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-
-
         list = new ArrayList<>();
 
         // Initiate and populate RecyclerView
@@ -147,6 +145,9 @@ public class MainActivity extends AppCompatActivity
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
+
+                            list.clear();
+
                             for (DocumentSnapshot document : task.getResult()) {
                                 //Log.d(TAG, document.getId() + " => " + document.getData());
                                 list.add(document.getString("title"));
@@ -177,11 +178,12 @@ public class MainActivity extends AppCompatActivity
 
     public void PopulateRecyclerView(){
 
+        adapter = new AdapterMain(list);
+        recyclerView.setAdapter(adapter);
 
         ReadFeedsFromDB();
 
-        adapter = new AdapterMain(list);
-        recyclerView.setAdapter(adapter);
+
     }
 
     public void ItemClicked(String data){
