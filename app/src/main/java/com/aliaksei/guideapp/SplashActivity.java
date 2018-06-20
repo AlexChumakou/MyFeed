@@ -44,10 +44,7 @@ public class SplashActivity extends Activity implements View.OnClickListener {
         if(user_name.equals("")){
             // create new account dialog
 
-
             signin.setVisibility(View.VISIBLE);
-
-
 
         }else{
 
@@ -158,8 +155,8 @@ public class SplashActivity extends Activity implements View.OnClickListener {
     }
 
     private void createNewUser(String user,String pass){
-        SharedPreferences settings = getSharedPreferences("settings",MODE_PRIVATE);
-        settings.edit().putString("user",user).commit();
+
+
         WriteNewFeedToDB(user,pass);
 
 
@@ -168,7 +165,7 @@ public class SplashActivity extends Activity implements View.OnClickListener {
 
     // - DB READ/WRITE - //
 
-    private void WriteNewFeedToDB(String user,String pass){
+    private void WriteNewFeedToDB(final String user,String pass){
 
         // - Initialize DB - //
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -184,6 +181,9 @@ public class SplashActivity extends Activity implements View.OnClickListener {
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
+
+                        SharedPreferences settings = getSharedPreferences("settings",MODE_PRIVATE);
+                        settings.edit().putString("user",user).commit();
 
                         Intent i = new Intent(SplashActivity.this,MainActivity.class);
                         startActivity(i);

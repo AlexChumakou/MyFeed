@@ -58,7 +58,7 @@ public class MainFindActivity extends AppCompatActivity implements View.OnClickL
             public void onClick(View view) {
 
                 // replace with New Feed Activity
-                WriteNewFeedToDB("Alex is awesome");
+                //WriteNewFeedToDB("Alex is awesome");
 
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
@@ -136,13 +136,12 @@ public class MainFindActivity extends AppCompatActivity implements View.OnClickL
 
     public void dealwithSearch(String input){
         ArrayList<String> list = new ArrayList<>();
-        list.add(input);
+        //list.add(input);
 
         adapter = new AdapterFind(list);
         recyclerView.setAdapter(adapter);
 
     }
-
 
     // - POPULATE RECYCLER / ITEM CLICKED - //
 
