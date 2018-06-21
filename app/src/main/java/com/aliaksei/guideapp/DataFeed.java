@@ -7,8 +7,7 @@ package com.aliaksei.guideapp;
 public class DataFeed {
 
     // - FEED VARIABLES -//
-    private String title,creator;
-    private int numUsers;
+    private String id,title,creator;
 
 
     // - CONSTRUCTOR - //
@@ -16,14 +15,17 @@ public class DataFeed {
 
     }
 
-    DataFeed(String data,String creator){
-        this.title = data;
+    DataFeed(String id,String title,String creator){
+        this.id = id;
+        this.title = title;
         this.creator = creator;
     }
 
     // - GETTERS - //
+    public String getId(){ return this.id; }
     public String getTitle(){
         return this.title;
     }
     public String getCreator(){ return this.creator; }
+
 }

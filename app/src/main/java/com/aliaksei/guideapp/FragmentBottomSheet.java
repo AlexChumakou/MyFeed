@@ -1,6 +1,8 @@
 package com.aliaksei.guideapp;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.view.View;
@@ -13,7 +15,7 @@ import android.widget.TextView;
 
 public class FragmentBottomSheet extends BottomSheetDialogFragment {
 
-
+    @SuppressLint("RestrictedApi")
     @Override
     public void setupDialog(final Dialog dialog, int style) {
         super.setupDialog(dialog, style);
@@ -25,7 +27,6 @@ public class FragmentBottomSheet extends BottomSheetDialogFragment {
         textView.setText(getArguments().getString("data"));
 
 
-
         Button btn = (Button) dialog.findViewById(R.id.btnaddgroup);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -33,14 +34,15 @@ public class FragmentBottomSheet extends BottomSheetDialogFragment {
 
                 // Add to user's main Feed
 
-                String data = getArguments().get("data").toString();
-                ((MainFindActivity)getActivity()).WriteNewFeedToDB(data);
+                String id = getArguments().getString("id");
+                ((MainFindActivity)getActivity()).WriteNewFeedToDB(id);
                 dialog.dismiss();
 
 
 
             }
         });
+
 
 
     }

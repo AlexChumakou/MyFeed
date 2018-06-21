@@ -24,11 +24,11 @@ import java.util.List;
 
 public class AdapterFeed  extends RecyclerView.Adapter<AdapterFeed.ViewHolder> {
 
-    public List<String> classes;
+    public List<DataPost> classes;
 
 
     //Constructor
-    AdapterFeed(List<String> classes){
+    AdapterFeed(List<DataPost> classes){
         this.classes = classes;
     }
 
@@ -37,6 +37,7 @@ public class AdapterFeed  extends RecyclerView.Adapter<AdapterFeed.ViewHolder> {
         CardView cv;
         TextView cardName;
         TextView cardCat;
+        TextView cardMessage;
         TextView classTime;
 
         ViewHolder(View itemView) {
@@ -44,6 +45,7 @@ public class AdapterFeed  extends RecyclerView.Adapter<AdapterFeed.ViewHolder> {
             cv = (CardView)itemView.findViewById(R.id.cv);
             cardName = (TextView)itemView.findViewById(R.id.feedName);
             cardCat = (TextView) itemView.findViewById(R.id.feedCat);
+            cardMessage = (TextView) itemView.findViewById(R.id.feedData);
         }
     }
 
@@ -60,16 +62,11 @@ public class AdapterFeed  extends RecyclerView.Adapter<AdapterFeed.ViewHolder> {
     @Override
     public void onBindViewHolder(final ViewHolder viewHolder, final int i) {
 
-        viewHolder.cardName.setText(classes.get(i));
+        viewHolder.cardName.setText(classes.get(i).getUser());
+        viewHolder.cardMessage.setText(classes.get(i).getMessage());
 
-        if(classes.get(i).equals("Alex C"))
-            viewHolder.cardCat.setText("Q");
-        else if(classes.get(i).equals("Avi A"))
-            viewHolder.cardCat.setText("E");
-        else if(classes.get(i).equals("Varun K"))
-            viewHolder.cardCat.setText("R");
-        else
-            viewHolder.cardCat.setText("N");
+
+
         viewHolder.cv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -84,7 +81,7 @@ public class AdapterFeed  extends RecyclerView.Adapter<AdapterFeed.ViewHolder> {
             @Override
             public boolean onLongClick(View v) {
 
-                ((MainFeedActivity)viewHolder.cv.getContext()).ItemLongClicked(classes.get(i));
+                ((MainFeedActivity)viewHolder.cv.getContext()).ItemLongClicked(classes.get(i).getUser());
 
                 // Open Dialog with upvote and report option
 

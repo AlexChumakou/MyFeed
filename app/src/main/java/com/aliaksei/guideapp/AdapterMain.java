@@ -19,11 +19,11 @@ import java.util.List;
 
 public class AdapterMain  extends RecyclerView.Adapter<AdapterMain.ViewHolder> {
 
-    public List<String> classes;
+    public List<DataFeed> classes;
     public Context context;
 
     //Constructor
-    AdapterMain(List<String> classes){
+    AdapterMain(List<DataFeed> classes){
         this.classes = classes;
     }
 
@@ -55,7 +55,7 @@ public class AdapterMain  extends RecyclerView.Adapter<AdapterMain.ViewHolder> {
     @Override
     public void onBindViewHolder(final ViewHolder viewHolder, final int i) {
 
-        viewHolder.cardName.setText(classes.get(i));
+        viewHolder.cardName.setText(classes.get(i).getTitle());
 
 
         viewHolder.cv.setOnClickListener(new View.OnClickListener() {
@@ -66,6 +66,16 @@ public class AdapterMain  extends RecyclerView.Adapter<AdapterMain.ViewHolder> {
                 //Intent i = new Intent(context, MainFeedActivity.class);
                 //context.startActivity(i);
 
+            }
+        });
+
+        viewHolder.cv.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+
+                ((MainActivity)context).ItemLongClicked(classes.get(i));
+
+                return true;
             }
         });
 

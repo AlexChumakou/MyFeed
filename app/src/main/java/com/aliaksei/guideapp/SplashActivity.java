@@ -47,12 +47,27 @@ public class SplashActivity extends Activity implements View.OnClickListener {
             signin.setVisibility(View.VISIBLE);
 
         }else{
-
+            //signin.setVisibility(View.GONE);
             // sign in and open mainActivity
+            Thread timer=new Thread()
+            {
+                public void run() {
+                    try {
+                        sleep(2000);
+                    } catch (InterruptedException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                    finally
+                    {
+                        Intent i = new Intent(SplashActivity.this,MainActivity.class);
+                        finish();
+                        startActivity(i);
+                    }
+                }
+            };
+            timer.start();
 
-            Intent i = new Intent(this,MainActivity.class);
-            startActivity(i);
-            this.finish();
 
         }
 
@@ -74,10 +89,13 @@ public class SplashActivity extends Activity implements View.OnClickListener {
                 Epassword.setVisibility(View.VISIBLE);
                 signup.setVisibility(View.VISIBLE);
             }else{
-                if (!Euser.getText().toString().equals("")&& Epassword.getText().toString().length() > 5){
+                if (!Euser.getText().toString().equals("")&& Epassword.getText().toString().length() >= 4 ){
 
                     SignInUser(Euser.getText().toString(),Epassword.getText().toString());
 
+                }else{
+                    Snackbar.make(getCurrentFocus(), "Password too short!", Snackbar.LENGTH_LONG)
+                            .show();
                 }
                 // Create new user ()
 
@@ -87,7 +105,7 @@ public class SplashActivity extends Activity implements View.OnClickListener {
             Euser = (EditText)findViewById(R.id.edituser);
             Epassword = (EditText)findViewById(R.id.editpassword);
 
-            if (!Euser.getText().toString().equals("")&& Epassword.getText().toString().length() > 5){
+            if (!Euser.getText().toString().equals("")&& Epassword.getText().toString().length() >= 4){
 
                 createNewUser(Euser.getText().toString(),Epassword.getText().toString());
 

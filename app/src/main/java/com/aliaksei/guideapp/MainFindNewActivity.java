@@ -170,8 +170,8 @@ public class MainFindNewActivity extends AppCompatActivity {
             RecyclerView recyclerView = (RecyclerView)rootView.findViewById(R.id.recyclerFind);
             LinearLayoutManager llm = new LinearLayoutManager(rootView.getContext());
             recyclerView.setLayoutManager(llm);
-            AdapterFind adapter = new AdapterFind(list);
-            recyclerView.setAdapter(adapter);
+            //AdapterFind adapter = new AdapterFind(list);
+            //recyclerView.setAdapter(adapter);
 
 
             return rootView;

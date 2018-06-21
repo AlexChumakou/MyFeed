@@ -1,6 +1,8 @@
 package com.aliaksei.guideapp;
 
+import android.app.DialogFragment;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -15,6 +17,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
+
 import java.util.ArrayList;
 
 public class MainFeedActivity extends AppCompatActivity {
@@ -22,6 +30,12 @@ public class MainFeedActivity extends AppCompatActivity {
 
     private BottomSheetBehavior mBottomSheetBehavior1;
     FloatingActionButton fab;
+
+    RecyclerView recyclerView;
+    AdapterFeed adapterFeed;
+
+    ArrayList<DataPost> list;
+    String FeedId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,17 +46,30 @@ public class MainFeedActivity extends AppCompatActivity {
         getWindow().setStatusBarColor(Color.parseColor("#060809"));
 
         // --- BUNDLE --- //
-        String data;
+        String title,id;
         Bundle bundle = getIntent().getExtras();
         if(bundle != null){
-            data = bundle.getString("data");
-            getSupportActionBar().setTitle(data);
+            title = bundle.getString("title","Title of Feed");
+            id = bundle.getString("id");
+            getSupportActionBar().setTitle(title);
         }else{
-            data = "EMPTY";
+            id = "EMPTY";
         }
 
+        FeedId = id;
+
+        // Initiate and populate RecyclerView
+        recyclerView = (RecyclerView)findViewById(R.id.recyclerFeed);
+        LinearLayoutManager llm = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(llm);
+
+        list = new ArrayList<>();
+
+        //readfrom database
+        PopulateRecyclerView(id);
+
         // --- SET UP UI --- //
-        dealwithRecyclerView();
+        //dealwithRecyclerView();
         dealwithBottomSheet();
 
         // --- FAB --- //
@@ -52,7 +79,12 @@ public class MainFeedActivity extends AppCompatActivity {
             public void onClick(View view) {
 
 
-
+                // add new thing
+                DialogFragment fragmentCreatePost = new FragmentCreatePost();
+                Bundle bundle = new Bundle();
+                bundle.putString("feedid",FeedId);
+                fragmentCreatePost.setArguments(bundle);
+                fragmentCreatePost.show(getFragmentManager(),"create");
 
                 //Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                 //        .setAction("Action", null).show();
@@ -61,20 +93,49 @@ public class MainFeedActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
+
+    // - RECYCLER POPULATE/ITEM CLICKED - //
+
+    public void PopulateRecyclerView(String id){
+
+        adapterFeed = new AdapterFeed(list);
+        recyclerView.setAdapter(adapterFeed);
+
+        ReadFromDB(id);
+    }
+
+    public void ReadFromDB(String id){
+        // - Initialize DB and list - //
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        SharedPreferences sharedPreferences = getSharedPreferences("settings",MODE_PRIVATE);
+        String username = sharedPreferences.getString("user","not_created");
+
+
+        db.collection("feeds").document(id)
+                .collection("posts")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            list.clear();
+
+                            for (DocumentSnapshot document : task.getResult()) {
+                                //Log.d(TAG, document.getId() + " => " + document.getData());
+                                list.add(document.toObject(DataPost.class));
+                                adapterFeed.notifyDataSetChanged();
+                            }
+
+                        } else {
+
+                        }
+                    }
+                });
+    }
+
     public void dealwithRecyclerView(){
 
-        ArrayList<String> list = new ArrayList<>();
-        list.add("Alex C");
-        list.add("Avi A");
-        list.add("Varun K");
-        list.add("Darya C");
-        list.add("Avi A");
 
-        RecyclerView recyclerView = (RecyclerView)findViewById(R.id.recyclerFeed);
-        LinearLayoutManager llm = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(llm);
-        AdapterFeed adapter = new AdapterFeed(list);
-        recyclerView.setAdapter(adapter);
     }
 
     public void ItemClicked(String data){
@@ -114,8 +175,6 @@ public class MainFeedActivity extends AppCompatActivity {
 
 
     }
-
-
 
 
     @Override

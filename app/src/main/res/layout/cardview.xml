@@ -11,7 +11,7 @@
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:layout_margin="8dp"
-        android:layout_alignParentEnd="true"
+        android:layout_alignParentStart="true"
         android:elevation="8dp"
         android:src="@drawable/card_newdot" />
 
@@ -63,14 +63,14 @@
                     android:gravity="center"
                     android:text="ECS 154a"
                     android:textColor="#FFFFFF"
-                    android:textSize="28sp" />
+                    android:textSize="35sp" />
 
                 <TextView
                     android:id="@+id/recprof"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="Description"
+                    android:text=""
                     android:textColor="#FFFFFF"
                     android:textSize="16sp" />
 
@@ -88,7 +88,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="0dp"
                     android:text="45 Users"
                     android:textColor="#FFFFFF"
                     android:textSize="16sp" />
@@ -97,6 +97,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:visibility="gone"
                 android:id="@+id/linbtns"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -108,7 +109,7 @@
                     android:layout_height="wrap_content"
                     android:text="Users"
                     android:foreground="?android:attr/selectableItemBackground"
-                    android:textColor="#FFFFFF"
+                    android:textColor="@color/colorAccent"
                     android:background="#00FFFFFF"
                     android:layout_weight="1"/>
 
@@ -117,7 +118,7 @@
                     android:layout_height="wrap_content"
                     android:text="Reminders"
                     android:foreground="?android:attr/selectableItemBackground"
-                    android:textColor="#FFFFFF"
+                    android:textColor="@color/colorAccent"
                     android:background="#00FFFFFF"
                     android:layout_weight="1"/>
 
@@ -126,7 +127,7 @@
                     android:layout_height="wrap_content"
                     android:text="Events"
                     android:foreground="?android:attr/selectableItemBackground"
-                    android:textColor="#FFFFFF"
+                    android:textColor="@color/colorAccent"
                     android:background="#00FFFFFF"
                     android:layout_weight="1"/>
             </LinearLayout>

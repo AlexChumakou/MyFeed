@@ -1,6 +1,7 @@
 package com.aliaksei.guideapp;
 
 
+import android.animation.Animator;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -42,7 +43,7 @@ public class MainActivity extends AppCompatActivity
     FloatingActionButton fab;
     RecyclerView recyclerView;
     AdapterMain adapter;
-    ArrayList<String> list;
+    ArrayList<DataFeed> list;
 
 
     @Override
@@ -59,19 +60,23 @@ public class MainActivity extends AppCompatActivity
         LinearLayoutManager llm = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(llm);
 
+        dealwithBottomSheet();
 
-/*
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                //if(mBottomSheetBehavior1.getState() != BottomSheetBehavior.STATE_EXPANDED) {
-                //    mBottomSheetBehavior1.setState(BottomSheetBehavior.STATE_EXPANDED);
-                //    fab.animate().scaleY(0).scaleX(0).setDuration(500).start();
+                Intent i = new Intent(MainActivity.this,MainFindActivity.class);
+                startActivity(i);
 
-                //}
+                /*
+                if(mBottomSheetBehavior1.getState() != BottomSheetBehavior.STATE_EXPANDED) {
+                    mBottomSheetBehavior1.setState(BottomSheetBehavior.STATE_EXPANDED);
+                    fab.animate().scaleY(0).scaleX(0).setDuration(500).start();
 
+                }
+                */
 
                 //bottomSheetDialogFragment = new FragmentBottomSheet();
                 //bottomSheetDialogFragment.show(getSupportFragmentManager(), bottomSheetDialogFragment.getTag());
@@ -81,7 +86,7 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-*/
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -150,7 +155,7 @@ public class MainActivity extends AppCompatActivity
 
                             for (DocumentSnapshot document : task.getResult()) {
                                 //Log.d(TAG, document.getId() + " => " + document.getData());
-                                list.add(document.getString("title"));
+                                list.add(document.toObject(DataFeed.class));
                                 adapter.notifyDataSetChanged();
                             }
 
@@ -181,17 +186,37 @@ public class MainActivity extends AppCompatActivity
         adapter = new AdapterMain(list);
         recyclerView.setAdapter(adapter);
 
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                mBottomSheetBehavior1.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                fab.animate().scaleY(1).scaleX(1).setDuration(300).start();
+
+            }
+        });
+
         ReadFeedsFromDB();
 
 
     }
 
-    public void ItemClicked(String data){
+    public void ItemClicked(DataFeed data){
 
         Intent i = new Intent(MainActivity.this, MainFeedActivity.class);
-        i.putExtra("data",data);
+        i.putExtra("id",data.getId());
+        i.putExtra("title",data.getTitle());
         startActivity(i);
 
+
+    }
+    public void ItemLongClicked(DataFeed data){
+
+        if(mBottomSheetBehavior1.getState() != BottomSheetBehavior.STATE_EXPANDED) {
+            mBottomSheetBehavior1.setState(BottomSheetBehavior.STATE_EXPANDED);
+            fab.animate().scaleY(0).scaleX(0).setDuration(500).start();
+
+        }
 
     }
 
@@ -202,13 +227,13 @@ public class MainActivity extends AppCompatActivity
 
         View bottomSheet = findViewById(R.id.bottom_sheet1);
         mBottomSheetBehavior1 = BottomSheetBehavior.from(bottomSheet);
+        mBottomSheetBehavior1.setState(BottomSheetBehavior.STATE_COLLAPSED);
 
         mBottomSheetBehavior1.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 if(newState == BottomSheetBehavior.STATE_COLLAPSED){
-                    mBottomSheetBehavior1.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                    fab.animate().scaleY(1).scaleX(1).setDuration(500).start();
+                    fab.animate().scaleY(1).scaleX(1).setDuration(300).start();
                 }
             }
 

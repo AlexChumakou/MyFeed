@@ -16,11 +16,11 @@ import java.util.List;
 
 public class AdapterFind  extends RecyclerView.Adapter<AdapterFind.ViewHolder> {
 
-    public List<String> classes;
+    public List<DataFeed> classes;
     public Context context;
 
     //Constructor
-    AdapterFind(List<String> classes){
+    AdapterFind(List<DataFeed> classes){
         this.classes = classes;
     }
 
@@ -52,7 +52,7 @@ public class AdapterFind  extends RecyclerView.Adapter<AdapterFind.ViewHolder> {
     @Override
     public void onBindViewHolder(final ViewHolder viewHolder, final int i) {
 
-        viewHolder.cardName.setText(classes.get(i));
+        viewHolder.cardName.setText(classes.get(i).getTitle());
 
 
         viewHolder.cv.setOnClickListener(new View.OnClickListener() {
