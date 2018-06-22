@@ -3,6 +3,7 @@ package com.aliaksei.guideapp;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -11,6 +12,8 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -31,19 +34,24 @@ import static android.content.Context.MODE_PRIVATE;
  * Created by alexc on 6/19/2018.
  */
 
-public class FragmentCreateFeed extends DialogFragment {
+public class FragmentCreateComm extends DialogFragment {
 
+
+    String feedId,postId;
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState){
+
+        feedId = getArguments().getString("feedid","null");
+        postId = getArguments().getString("postid","null");
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
 
-        View layout = inflater.inflate(R.layout.fragment_create,null);
+        View layout = inflater.inflate(R.layout.fragment_create_post,null);
 
         final EditText editTitle = (EditText)layout.findViewById(R.id.titedit);
-        final EditText editDesc = (EditText)layout.findViewById(R.id.descedit);
+        //final EditText editDesc = (EditText)layout.findViewById(R.id.descedit);
 
         final Button btnCreate = (Button)layout.findViewById(R.id.btncreate);
         final Button btnCancel = (Button)layout.findViewById(R.id.btncancel);
@@ -63,29 +71,7 @@ public class FragmentCreateFeed extends DialogFragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if(s.length() >= 3){
-                    editDesc.setVisibility(View.VISIBLE);
-                }else{
-                    editDesc.setVisibility(View.GONE);
-                }
-            }
-        });
-
-        editDesc.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                if(s.length() >= 5){
+                if(s.length() >= 1){
                     btnCreate.setVisibility(View.VISIBLE);
                 }else{
                     btnCreate.setVisibility(View.GONE);
@@ -93,16 +79,17 @@ public class FragmentCreateFeed extends DialogFragment {
             }
         });
 
+
         btnCreate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 // create new feed
-                AddFeedToDB(editTitle.getText().toString(),editDesc.getText().toString());
+                AddPostToDB(editTitle.getText().toString());
 
                 dismiss();
 
-                ((MainFindActivity)getActivity()).dealwithRecycler();
+                //((MainFeedActivity)getActivity()).dealwithBottomRecycler(postId);
 
             }
         });
@@ -117,16 +104,19 @@ public class FragmentCreateFeed extends DialogFragment {
         });
 
 
-        builder.setTitle("Create New Feed");
+        builder.setTitle("New Comment");
 
         builder.setView(layout);
 
+        AlertDialog dialog = builder.create();
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
 
+        //showSoftKeyboard(editTitle);
 
-        return builder.create();
+        return dialog;
     }
 
-    public void AddFeedToDB(String title,String description){
+    public void AddPostToDB(String message){
 
         // get currently signed in user
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("settings",MODE_PRIVATE);
@@ -135,24 +125,21 @@ public class FragmentCreateFeed extends DialogFragment {
         // - Initialize DB - //
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+        DocumentReference documentReference = db.collection("feeds").document(feedId)
+                .collection("posts").document(postId)
+                .collection("comments").document();
 
-        DocumentReference documentReference = db.collection("feeds").document();
-
-
-        DataFeed dataFeed = new DataFeed(documentReference.getId(),title,description,user);
-
-        // add DataFeed to FEEDS
-        documentReference.set(dataFeed);
-
-        DocumentReference documentReference1 = documentReference.collection("posts").document();
-        documentReference1.set(new DataPost(documentReference1.getId(),"Welcome to This feed!",user));
+        documentReference.set(new DataPost(documentReference.getId(),message,user));
 
 
-        // add Feed ID to USER_FEEDS
-        db.collection("users").document(user)
-                .collection("user_feeds").document(documentReference.getId())
-                .set(dataFeed);
+    }
 
+    public void showSoftKeyboard(View view) {
+        if (view.requestFocus()) {
+            InputMethodManager imm = (InputMethodManager)
+                    getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
+        }
     }
 
 }

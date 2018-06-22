@@ -124,8 +124,10 @@ public class FragmentCreatePost extends DialogFragment {
         // - Initialize DB - //
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        db.collection("feeds").document(feedId)
-                .collection("posts").add(new DataPost(message,user));
+        DocumentReference documentReference = db.collection("feeds").document(feedId)
+                .collection("posts").document();
+
+        documentReference.set(new DataPost(documentReference.getId(),message,user));
 
 
     }

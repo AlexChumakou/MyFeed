@@ -9,6 +9,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import org.w3c.dom.Text;
+
 /**
  * Created by alexc on 6/4/2018.
  */
@@ -25,7 +27,8 @@ public class FragmentBottomSheet extends BottomSheetDialogFragment {
 
         TextView textView = (TextView)dialog.findViewById(R.id.groupname);
         textView.setText(getArguments().getString("data"));
-
+        TextView descText = (TextView)dialog.findViewById(R.id.groupdesc);
+        descText.setText(getArguments().getString("desc","No Description Found"));
 
         Button btn = (Button) dialog.findViewById(R.id.btnaddgroup);
         btn.setOnClickListener(new View.OnClickListener() {

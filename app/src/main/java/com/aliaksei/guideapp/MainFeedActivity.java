@@ -16,6 +16,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -28,14 +30,17 @@ import java.util.ArrayList;
 public class MainFeedActivity extends AppCompatActivity {
 
 
-    private BottomSheetBehavior mBottomSheetBehavior1;
-    FloatingActionButton fab;
+    private BottomSheetBehavior mBottomSheetBehavior1,mBottomSheetBehavior2;
+    FloatingActionButton fab,fab2;
 
-    RecyclerView recyclerView;
+    RecyclerView recyclerView,recyclerViewbottom;
     AdapterFeed adapterFeed;
+    AdapterComm adapterComm;
 
-    ArrayList<DataPost> list;
-    String FeedId;
+    ArrayList<DataPost> list,commentlist;
+    String FeedId,PostId;
+    TextView mainText;
+    Button commentBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,20 +69,20 @@ public class MainFeedActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(llm);
 
         list = new ArrayList<>();
+        commentlist = new ArrayList<>();
 
         //readfrom database
         PopulateRecyclerView(id);
 
         // --- SET UP UI --- //
         //dealwithRecyclerView();
-        dealwithBottomSheet();
+        //dealwithBottomSheet();
 
         // --- FAB --- //
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
 
                 // add new thing
                 DialogFragment fragmentCreatePost = new FragmentCreatePost();
@@ -90,6 +95,8 @@ public class MainFeedActivity extends AppCompatActivity {
                 //        .setAction("Action", null).show();
             }
         });
+
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
@@ -101,16 +108,23 @@ public class MainFeedActivity extends AppCompatActivity {
         adapterFeed = new AdapterFeed(list);
         recyclerView.setAdapter(adapterFeed);
 
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+
+
+
+            }
+        });
+
+
         ReadFromDB(id);
     }
 
     public void ReadFromDB(String id){
         // - Initialize DB and list - //
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        SharedPreferences sharedPreferences = getSharedPreferences("settings",MODE_PRIVATE);
-        String username = sharedPreferences.getString("user","not_created");
-
-
         db.collection("feeds").document(id)
                 .collection("posts")
                 .get()
@@ -133,15 +147,66 @@ public class MainFeedActivity extends AppCompatActivity {
                 });
     }
 
-    public void dealwithRecyclerView(){
 
+    FragmentBottomComm bottomSheetDialogFragment;
+    public void ItemClicked(DataPost data){
+
+        Bundle bundle = new Bundle();
+        bundle.putString("data",data.getMessage());
+        bundle.putString("postid",data.getId());
+        bundle.putString("feedid",FeedId);
+
+
+
+        bottomSheetDialogFragment = new FragmentBottomComm();
+        bottomSheetDialogFragment.setArguments(bundle);
+
+        bottomSheetDialogFragment.show(getSupportFragmentManager(), bottomSheetDialogFragment.getTag());
+
+        PostId = data.getId();
+
+        /*
+
+
+        if(mBottomSheetBehavior2.getState() == BottomSheetBehavior.STATE_HIDDEN) {
+            mBottomSheetBehavior2.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            fab.animate().scaleY(0).scaleX(0).setDuration(500).start();
+
+        }
+
+        mainText.setText(data.getMessage());
+
+        PostId = data.getId();
+
+        adapterComm = new AdapterComm(commentlist);
+        recyclerViewbottom.setAdapter(adapterComm);
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("feeds").document(FeedId)
+                .collection("posts").document(data.getId())
+                .collection("comments")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            commentlist.clear();
+
+                            for (DocumentSnapshot document : task.getResult()) {
+                                //Log.d(TAG, document.getId() + " => " + document.getData());
+                                commentlist.add(document.toObject(DataPost.class));
+                                adapterComm.notifyDataSetChanged();
+                            }
+
+                        } else {
+
+                        }
+                    }
+                });
+          */
 
     }
 
-    public void ItemClicked(String data){
-
-
-    }
     public void ItemLongClicked(String data){
 
         if(mBottomSheetBehavior1.getState() != BottomSheetBehavior.STATE_EXPANDED) {
@@ -155,15 +220,26 @@ public class MainFeedActivity extends AppCompatActivity {
 
     public void dealwithBottomSheet(){
 
+
+
+        recyclerViewbottom = (RecyclerView)findViewById(R.id.recyclerComment);
+        LinearLayoutManager llm = new LinearLayoutManager(this);
+        recyclerViewbottom.setLayoutManager(llm);
+
         View bottomSheet = findViewById(R.id.bottom_sheet1);
+        //View bottomSheet2 = findViewById(R.id.bottom_sheet2);
         mBottomSheetBehavior1 = BottomSheetBehavior.from(bottomSheet);
+        //mBottomSheetBehavior2 = BottomSheetBehavior.from(bottomSheet2);
+
         mBottomSheetBehavior1.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        //mBottomSheetBehavior2.setState(BottomSheetBehavior.STATE_HIDDEN);
 
         mBottomSheetBehavior1.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                if(newState == BottomSheetBehavior.STATE_COLLAPSED){
+                if(newState == BottomSheetBehavior.STATE_HIDDEN){
                     fab.animate().scaleY(1).scaleX(1).setDuration(500).start();
+
                 }
             }
 
@@ -176,6 +252,35 @@ public class MainFeedActivity extends AppCompatActivity {
 
     }
 
+    public void dealwithBottomRecycler(String postId){
+
+        adapterComm = new AdapterComm(commentlist);
+        recyclerViewbottom.setAdapter(adapterComm);
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("feeds").document(FeedId)
+                .collection("posts").document(postId)
+                .collection("comments")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            commentlist.clear();
+
+                            for (DocumentSnapshot document : task.getResult()) {
+                                //Log.d(TAG, document.getId() + " => " + document.getData());
+                                commentlist.add(document.toObject(DataPost.class));
+                                adapterComm.notifyDataSetChanged();
+                            }
+
+                        } else {
+
+                        }
+                    }
+                });
+
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

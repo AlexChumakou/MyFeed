@@ -77,6 +77,7 @@ public class MainFindActivity extends AppCompatActivity implements View.OnClickL
             public void afterTextChanged(Editable s) {
                 if(s.length() == 0){
                     clear.setVisibility(View.GONE);
+                    dealwithRecycler();
                 }else{
                     clear.setVisibility(View.VISIBLE);
                 }
@@ -228,43 +229,7 @@ public class MainFindActivity extends AppCompatActivity implements View.OnClickL
                     }
                 });
 
-        /*
-        // Create a query against the collection.
-        Query query = citiesRef.whereEqualTo("title", input);
 
-        query.get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            list.clear();
-                            clear.setVisibility(View.VISIBLE);
-                            for (DocumentSnapshot document : task.getResult()) {
-                                list.add(document.toObject(DataFeed.class));
-                                adapter.notifyDataSetChanged();
-                                //Log.d(TAG, document.getId() + " => " + document.getData());
-                            }
-                            if(list.isEmpty()){
-                                adapter.notifyDataSetChanged();
-                                Snackbar.make(getCurrentFocus(), "None found! Create new feed or try again.", Snackbar.LENGTH_LONG)
-                                        .show();
-                            }
-                        } else {
-
-                            //Snackbar.make(editText.getRootView(), "None found! Create new feed or try again.", Snackbar.LENGTH_LONG)
-                            //        .show();
-
-                            //Log.d(TAG, "Error getting documents: ", task.getException());
-                        }
-                    }
-
-                });
-        //ArrayList<DataFeed> list = new ArrayList<>();
-        //list.add(input);
-
-        //adapter = new AdapterFind(list);
-        //recyclerView.setAdapter(adapter);
-        */
     }
 
     // - POPULATE RECYCLER / ITEM CLICKED - //
@@ -296,6 +261,7 @@ public class MainFindActivity extends AppCompatActivity implements View.OnClickL
 
         Bundle bundle = new Bundle();
         bundle.putString("data",data.getTitle());
+        bundle.putString("desc",data.getDescription());
         bundle.putString("id",data.getId());
         bundle.putString("user",data.getCreator());
 

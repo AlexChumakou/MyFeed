@@ -22,13 +22,13 @@ import java.util.List;
  * Created by alexc on 6/5/2018.
  */
 
-public class AdapterFeed  extends RecyclerView.Adapter<AdapterFeed.ViewHolder> {
+public class AdapterComm  extends RecyclerView.Adapter<AdapterComm.ViewHolder> {
 
     public List<DataPost> classes;
 
 
     //Constructor
-    AdapterFeed(List<DataPost> classes){
+    AdapterComm(List<DataPost> classes){
         this.classes = classes;
     }
 
@@ -71,7 +71,7 @@ public class AdapterFeed  extends RecyclerView.Adapter<AdapterFeed.ViewHolder> {
             @Override
             public void onClick(View v) {
 
-                ((MainFeedActivity)viewHolder.cv.getContext()).ItemClicked(classes.get(i));
+                //((MainFeedActivity)viewHolder.cv.getContext()).ItemClicked(classes.get(i));
 
                 //Intent i = new Intent(viewHolder.classTag.getContext(), MyClassActivity.class);
                 //viewHolder.classProf.getContext().startActivity(i);
@@ -83,11 +83,11 @@ public class AdapterFeed  extends RecyclerView.Adapter<AdapterFeed.ViewHolder> {
             @Override
             public boolean onLongClick(View v) {
 
-                ((MainFeedActivity)viewHolder.cv.getContext()).ItemLongClicked(classes.get(i).getUser());
+                //((MainFeedActivity)viewHolder.cv.getContext()).ItemLongClicked(classes.get(i).getUser());
 
                 // Open Dialog with upvote and report option
 
-                return true;
+                return false;
             }
         });
 
