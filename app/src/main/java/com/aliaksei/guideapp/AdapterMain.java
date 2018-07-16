@@ -62,7 +62,7 @@ public class AdapterMain  extends RecyclerView.Adapter<AdapterMain.ViewHolder> {
             @Override
             public void onClick(View v) {
 
-                ((MainActivity)context).ItemClicked(classes.get(i));
+                ((MainActivity)context).ItemClicked(classes.get(i),viewHolder.cardName);
                 //Intent i = new Intent(context, MainFeedActivity.class);
                 //context.startActivity(i);
 

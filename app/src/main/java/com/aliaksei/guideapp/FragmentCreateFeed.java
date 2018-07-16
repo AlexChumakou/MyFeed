@@ -21,7 +21,9 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.lang.reflect.Array;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -102,7 +104,7 @@ public class FragmentCreateFeed extends DialogFragment {
 
                 dismiss();
 
-                ((MainFindActivity)getActivity()).dealwithRecycler();
+                ((MainFindActivity)getActivity()).ReadFeedsFromDB();
 
             }
         });
@@ -143,9 +145,9 @@ public class FragmentCreateFeed extends DialogFragment {
 
         // add DataFeed to FEEDS
         documentReference.set(dataFeed);
-
+        String currDate = getCurrDate();
         DocumentReference documentReference1 = documentReference.collection("posts").document();
-        documentReference1.set(new DataPost(documentReference1.getId(),"Welcome to This feed!",user));
+        documentReference1.set(new DataPost(documentReference1.getId(),"Welcome to This feed!",user,currDate,0,0,"",0));
 
 
         // add Feed ID to USER_FEEDS
@@ -153,6 +155,12 @@ public class FragmentCreateFeed extends DialogFragment {
                 .collection("user_feeds").document(documentReference.getId())
                 .set(dataFeed);
 
+    }
+    public String getCurrDate(){
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
+
+        return sdf.format(Calendar.getInstance().getTime());
     }
 
 }

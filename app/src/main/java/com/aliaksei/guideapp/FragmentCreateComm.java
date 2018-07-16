@@ -18,13 +18,18 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Transaction;
 
 import java.lang.reflect.Array;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -89,6 +94,8 @@ public class FragmentCreateComm extends DialogFragment {
 
                 dismiss();
 
+                ((MainPostActivity)getActivity()).CommentAdded();
+
                 //((MainFeedActivity)getActivity()).dealwithBottomRecycler(postId);
 
             }
@@ -122,6 +129,8 @@ public class FragmentCreateComm extends DialogFragment {
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("settings",MODE_PRIVATE);
         String user = sharedPreferences.getString("user","not_found");
 
+        String currDate = getCurrDate();
+
         // - Initialize DB - //
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -129,9 +138,45 @@ public class FragmentCreateComm extends DialogFragment {
                 .collection("posts").document(postId)
                 .collection("comments").document();
 
-        documentReference.set(new DataPost(documentReference.getId(),message,user));
+        documentReference.set(new DataComm(documentReference.getId(),message,user,currDate,0));
 
 
+        final DocumentReference documentRef = db.collection("feeds").document(feedId)
+                .collection("posts").document(postId);
+
+        db.runTransaction(new Transaction.Function<Void>() {
+            @Override
+            public Void apply(Transaction transaction) throws FirebaseFirestoreException {
+                DataPost dataPost1 = transaction.get(documentRef).toObject(DataPost.class);
+                String upUsers = dataPost1.getHasupvoted();
+
+                // Compute new number of ratings
+                int cheers = dataPost1.getCheers() + 1;
+
+                dataPost1.setCheers(cheers);
+                // Update restaurant
+                transaction.set(documentRef, dataPost1);
+
+                return null;
+            }
+
+
+        }).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                //readFromDB();
+                //Log.d(TAG, "Transaction success!");
+            }
+        });
+
+    }
+
+
+    public String getCurrDate(){
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
+
+        return sdf.format(Calendar.getInstance().getTime());
     }
 
     public void showSoftKeyboard(View view) {

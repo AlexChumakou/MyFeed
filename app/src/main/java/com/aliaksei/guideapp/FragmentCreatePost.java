@@ -18,13 +18,19 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Transaction;
 
 import java.lang.reflect.Array;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -88,7 +94,7 @@ public class FragmentCreatePost extends DialogFragment {
 
                 dismiss();
 
-                ((MainFeedActivity)getActivity()).PopulateRecyclerView(feedId);
+                ((MainFeedActivity)getActivity()).ReadFromDB(feedId);
 
             }
         });
@@ -121,15 +127,25 @@ public class FragmentCreatePost extends DialogFragment {
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("settings",MODE_PRIVATE);
         String user = sharedPreferences.getString("user","not_found");
 
+        String currDate = getCurrentDate();
+
         // - Initialize DB - //
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         DocumentReference documentReference = db.collection("feeds").document(feedId)
                 .collection("posts").document();
 
-        documentReference.set(new DataPost(documentReference.getId(),message,user));
+        documentReference.set(new DataPost(documentReference.getId(),message,user,currDate,0,0,"",0));
 
 
+
+    }
+
+    public String getCurrentDate(){
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
+
+        return sdf.format(Calendar.getInstance().getTime());
     }
 
     public void showSoftKeyboard(View view) {

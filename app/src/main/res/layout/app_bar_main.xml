@@ -15,11 +15,11 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
+            android:background="#607d8b"
+            android:theme="@style/AppTheme.mycustom"
             app:popupTheme="@style/AppTheme.PopupOverlay" />
 
     </android.support.design.widget.AppBarLayout>
-
 
 
     <include layout="@layout/content_main" />
@@ -112,6 +112,6 @@
         android:background="@color/colorPrimary"
         app:layout_anchor="@id/bottom_sheet1"
         app:layout_anchorGravity="top|end"
-        app:srcCompat="@android:drawable/ic_input_add" />
+        app:srcCompat="@android:drawable/ic_dialog_email" />
 
 </android.support.design.widget.CoordinatorLayout>

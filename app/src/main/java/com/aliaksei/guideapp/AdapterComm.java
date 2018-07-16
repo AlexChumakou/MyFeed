@@ -16,6 +16,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.util.List;
 
 /**
@@ -24,11 +27,11 @@ import java.util.List;
 
 public class AdapterComm  extends RecyclerView.Adapter<AdapterComm.ViewHolder> {
 
-    public List<DataPost> classes;
+    public List<DataComm> classes;
 
 
     //Constructor
-    AdapterComm(List<DataPost> classes){
+    AdapterComm(List<DataComm> classes){
         this.classes = classes;
     }
 
@@ -38,7 +41,8 @@ public class AdapterComm  extends RecyclerView.Adapter<AdapterComm.ViewHolder> {
         TextView cardName;
         TextView cardCat;
         TextView cardMessage;
-        TextView classTime;
+        TextView cardCheer;
+        TextView cardDate;
 
         ViewHolder(View itemView) {
             super(itemView);
@@ -46,13 +50,15 @@ public class AdapterComm  extends RecyclerView.Adapter<AdapterComm.ViewHolder> {
             cardName = (TextView)itemView.findViewById(R.id.feedName);
             cardCat = (TextView) itemView.findViewById(R.id.feedCat);
             cardMessage = (TextView) itemView.findViewById(R.id.feedData);
+            cardCheer = (TextView) itemView.findViewById(R.id.feedCheer);
+            cardDate = (TextView) itemView.findViewById(R.id.feedDate);
         }
     }
 
     //onCreateViewHolder
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.cardviewfeed, viewGroup, false);
+        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.cardviewcomment, viewGroup, false);
         ViewHolder pvh = new ViewHolder(v);
         return pvh;
     }
@@ -64,12 +70,18 @@ public class AdapterComm  extends RecyclerView.Adapter<AdapterComm.ViewHolder> {
 
         viewHolder.cardName.setText(classes.get(i).getUser());
         viewHolder.cardMessage.setText(classes.get(i).getMessage());
+        viewHolder.cardCheer.setText("" + classes.get(i).getCheers());
+        viewHolder.cardDate.setText(classes.get(i).getDate());
 
 
 
         viewHolder.cv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                //fragmentBottomComm.onClick(classes.get(i),i);
+
+                //((MainPostActivity)viewHolder.cv.getContext()).ItemClicked(classes.get(i));
 
                 //((MainFeedActivity)viewHolder.cv.getContext()).ItemClicked(classes.get(i));
 
@@ -93,6 +105,15 @@ public class AdapterComm  extends RecyclerView.Adapter<AdapterComm.ViewHolder> {
 
 
     }
+
+
+    public void UpdateCommentCheer(DataComm dataComm){
+
+
+
+
+    }
+
 
     //onAttachedToRecyclerView
     @Override

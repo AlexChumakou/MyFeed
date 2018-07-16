@@ -48,11 +48,11 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="28dp"
         android:layout_marginTop="25dp"
-        android:background="@color/colorAccent"
+        android:background="#00000000"
         android:gravity="center"
         android:visibility="gone"
         android:text="Create"
-        android:textColor="#FFFFFF"
+        android:textColor="@color/colorAccent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/descedit" />
 
@@ -62,10 +62,10 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="28dp"
         android:layout_marginTop="25dp"
-        android:background="@color/colorAccent"
+        android:background="#00000000"
         android:gravity="center"
         android:text="Cancel"
-        android:textColor="#FFFFFF"
+        android:textColor="@color/colorAccent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/descedit" />
 

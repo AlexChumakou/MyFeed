@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -11,28 +12,19 @@
         android:id="@+id/cv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
+        android:layout_margin="3dp"
+        android:layout_marginBottom="8dp"
         android:background="@color/colorPrimary"
         android:clickable="true"
         android:foreground="?android:attr/selectableItemBackground"
-        app:cardBackgroundColor="@color/colorPrimary"
-        app:cardCornerRadius="8dp"
-        app:cardElevation="4dp">
+        app:cardCornerRadius="3dp"
+        app:cardElevation="3dp">
 
         <android.support.constraint.ConstraintLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <ImageView
-                android:id="@+id/backg"
-                android:layout_width="match_parent"
-                android:layout_height="140dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/card_background"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
 
 
             <LinearLayout
@@ -52,37 +44,38 @@
                     android:id="@+id/rectag"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
+                    android:gravity="start"
                     android:text="ECS 154a"
-                    android:textColor="#FFFFFF"
-                    android:textSize="28sp" />
+                    android:textColor="@color/colorText"
+                    android:textSize="35sp" />
 
-                <TextView
+                <ImageView
                     android:id="@+id/recprof"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="2dp"
                     android:gravity="center"
-                    android:text=""
-                    android:textColor="#FFFFFF"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:src="@color/colorAccent"
                     android:textSize="16sp" />
 
                 <TextView
                     android:id="@+id/rectime"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
+                    android:gravity="start"
                     android:text="Alex C."
-                    android:textColor="#FFFFFF"
+                    android:textColor="@color/colorText"
                     android:textSize="12sp" />
 
                 <TextView
                     android:id="@+id/recAct"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:layout_marginTop="10dp"
+                    android:gravity="start"
+                    android:layout_marginTop="0dp"
                     android:text="45 Users"
-                    android:textColor="#FFFFFF"
+                    android:textColor="@color/colorText"
                     android:textSize="16sp" />
 
 
@@ -93,4 +86,5 @@
 
         </android.support.constraint.ConstraintLayout>
     </android.support.v7.widget.CardView>
+
 </RelativeLayout>

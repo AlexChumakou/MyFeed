@@ -33,6 +33,7 @@ public class SplashActivity extends Activity implements View.OnClickListener {
         getWindow().setStatusBarColor(Color.parseColor("#060809"));
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+        getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
 
         signin = (Button)findViewById(R.id.btnsignin);
         signup = (Button)findViewById(R.id.btnsignup);

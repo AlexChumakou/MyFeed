@@ -15,14 +15,13 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
+            android:background="@drawable/toolbar_gradient"
+            android:theme="@style/AppTheme.mycustom"
             app:popupTheme="@style/AppTheme.PopupOverlay" />
 
     </android.support.design.widget.AppBarLayout>
 
-
     <include layout="@layout/content_main_feed" />
-
 
     <android.support.v4.widget.NestedScrollView
         android:id="@+id/bottom_sheet1"

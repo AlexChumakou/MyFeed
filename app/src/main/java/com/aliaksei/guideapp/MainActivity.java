@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -21,6 +22,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -30,6 +32,8 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,7 +48,9 @@ public class MainActivity extends AppCompatActivity
     RecyclerView recyclerView;
     AdapterMain adapter;
     ArrayList<DataFeed> list;
+    TextView mainText;
 
+    Firestore_Helper firestoreHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,14 +59,26 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        firestoreHelper = new Firestore_Helper();
         list = new ArrayList<>();
 
-        // Initiate and populate RecyclerView
+        // Initiate RecyclerView
         recyclerView = (RecyclerView)findViewById(R.id.recyclerMain);
         LinearLayoutManager llm = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(llm);
+        adapter = new AdapterMain(list);
+        recyclerView.setAdapter(adapter);
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                mBottomSheetBehavior1.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                fab.animate().scaleY(1).scaleX(1).setDuration(300).start();
 
-        dealwithBottomSheet();
+            }
+        });
+
+        mainText = (TextView)findViewById(R.id.mainTitle);
 
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -86,6 +104,7 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        dealwithBottomSheet();
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -100,7 +119,8 @@ public class MainActivity extends AppCompatActivity
     protected void onStart(){
         super.onStart();
 
-        PopulateRecyclerView();
+        mainText.setText("Loading...");
+        ReadFeedsFromDB();
     }
 
 
@@ -137,76 +157,27 @@ public class MainActivity extends AppCompatActivity
 
     private void ReadFeedsFromDB(){
 
-        // - Initialize DB and list - //
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        // get userTag from shared preferences
         SharedPreferences sharedPreferences = getSharedPreferences("settings",MODE_PRIVATE);
         String username = sharedPreferences.getString("user","not_created");
 
-
-        db.collection("users").document(username)
-                .collection("user_feeds")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-
-                            list.clear();
-
-                            for (DocumentSnapshot document : task.getResult()) {
-                                //Log.d(TAG, document.getId() + " => " + document.getData());
-                                list.add(document.toObject(DataFeed.class));
-                                adapter.notifyDataSetChanged();
-                            }
-
-                            if (list.isEmpty()){
-                                Snackbar.make(getCurrentFocus(), "No feeds added yet!", Snackbar.LENGTH_LONG)
-                                        .show();
-                            }
-
-                        } else {
-
-
-
-                            //Log.d(TAG, "Error getting documents: ", task.getException());
-
-                        }
-                    }
-                });
-
-
+        // get list of DataFeed (user's saved feeds) PARAMS: userTag,list,adapter,infoTextView
+        firestoreHelper.getSavedFeeds(username,list,adapter,mainText);
 
     }
 
 
-    // - RECYCLER POPULATE/ITEM CLICKED - //
-
-    public void PopulateRecyclerView(){
-
-        adapter = new AdapterMain(list);
-        recyclerView.setAdapter(adapter);
-
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-                mBottomSheetBehavior1.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                fab.animate().scaleY(1).scaleX(1).setDuration(300).start();
-
-            }
-        });
-
-        ReadFeedsFromDB();
+    public void ItemClicked(DataFeed data,View view){
 
 
-    }
-
-    public void ItemClicked(DataFeed data){
 
         Intent i = new Intent(MainActivity.this, MainFeedActivity.class);
         i.putExtra("id",data.getId());
         i.putExtra("title",data.getTitle());
-        startActivity(i);
+        ActivityOptionsCompat options = ActivityOptionsCompat.
+                makeSceneTransitionAnimation(this, (View)view, "title");
+        startActivity(i, options.toBundle());
+        //startActivity(i);
 
 
     }
@@ -288,9 +259,16 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
+        if (id == R.id.nav_myevents) {
+
+
+
             // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        } else if (id == R.id.nav_findfeeds) {
+
+            Intent i = new Intent(MainActivity.this,MainFindActivity.class);
+            startActivity(i);
+
 
         } else if (id == R.id.nav_slideshow) {
 
@@ -314,7 +292,7 @@ public class MainActivity extends AppCompatActivity
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
-        return true;
+        return false;
     }
 
     @Override

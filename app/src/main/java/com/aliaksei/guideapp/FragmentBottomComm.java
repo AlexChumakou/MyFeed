@@ -1,6 +1,7 @@
 package com.aliaksei.guideapp;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
@@ -16,10 +17,16 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.Transaction;
 
 import org.w3c.dom.Text;
 
@@ -33,7 +40,9 @@ public class FragmentBottomComm extends BottomSheetDialogFragment {
 
     RecyclerView recyclerViewbottom;
     AdapterComm adapterComm;
-    ArrayList<DataPost> commentlist;
+    ArrayList<DataComm> commentlist;
+    String feedid;
+    String postid;
 
     @SuppressLint("RestrictedApi")
     @Override
@@ -43,8 +52,8 @@ public class FragmentBottomComm extends BottomSheetDialogFragment {
         View contentView = View.inflate(getContext(), R.layout.fragment_bottom_comm, null);
         dialog.setContentView(contentView);
 
-        final String feedid = getArguments().getString("feedid","null");
-        final String postid = getArguments().getString("postid","null");
+        feedid = getArguments().getString("feedid","null");
+        postid = getArguments().getString("postid","null");
 
         commentlist = new ArrayList<>();
 
@@ -55,28 +64,7 @@ public class FragmentBottomComm extends BottomSheetDialogFragment {
         adapterComm = new AdapterComm(commentlist);
         recyclerViewbottom.setAdapter(adapterComm);
 
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("feeds").document(feedid)
-                .collection("posts").document(postid)
-                .collection("comments")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            commentlist.clear();
-
-                            for (DocumentSnapshot document : task.getResult()) {
-                                //Log.d(TAG, document.getId() + " => " + document.getData());
-                                commentlist.add(document.toObject(DataPost.class));
-                                adapterComm.notifyDataSetChanged();
-                            }
-
-                        } else {
-
-                        }
-                    }
-                });
+        readFromDB();
 
         TextView textView = (TextView)dialog.findViewById(R.id.mainText);
         textView.setText(getArguments().getString("data"));
@@ -98,10 +86,86 @@ public class FragmentBottomComm extends BottomSheetDialogFragment {
                 fragmentCreateComm.setArguments(bundle);
                 fragmentCreateComm.show(getActivity().getFragmentManager(),"tag");
 
+
                 dialog.dismiss();
 
 
 
+            }
+        });
+
+
+
+
+    }
+
+    @Override
+    public void onDismiss(final DialogInterface dialog) {
+        super.onDismiss(dialog);
+        final Activity activity = getActivity();
+        if (activity instanceof DialogInterface.OnDismissListener) {
+            ((DialogInterface.OnDismissListener) activity).onDismiss(dialog);
+        }
+    }
+
+
+    public void readFromDB(){
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("feeds").document(feedid)
+                .collection("posts").document(postid)
+                .collection("comments")
+                .orderBy("cheers", Query.Direction.DESCENDING)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            commentlist.clear();
+
+                            for (DocumentSnapshot document : task.getResult()) {
+                                //Log.d(TAG, document.getId() + " => " + document.getData());
+                                commentlist.add(document.toObject(DataComm.class));
+                                adapterComm.notifyDataSetChanged();
+                            }
+
+                        } else {
+
+                        }
+                    }
+                });
+    }
+
+    public void onClick(DataComm dataComm,final int pos){
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        final DocumentReference documentReference = db.collection("feeds").document(feedid)
+                .collection("posts").document(postid)
+                .collection("comments").document(dataComm.getId());
+
+        db.runTransaction(new Transaction.Function<Void>() {
+            @Override
+            public Void apply(Transaction transaction) throws FirebaseFirestoreException {
+                DataComm datacomm = transaction.get(documentReference).toObject(DataComm.class);
+
+                // Compute new number of ratings
+                int cheers = datacomm.getCheers() + 1;
+
+                datacomm.setCheers(cheers);
+
+
+                // Update restaurant
+                transaction.set(documentReference, datacomm);
+
+                return null;
+            }
+
+
+        }).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                readFromDB();
+                //Log.d(TAG, "Transaction success!");
             }
         });
 
